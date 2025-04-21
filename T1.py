@@ -5,49 +5,73 @@ import numpy as np
 from data import load_data
 
 if len(sys.argv) < 2:
-    print("Usage: python script.py <filename.mat>")
+    print("Usage: python T1.py <filename.mat>")
     sys.exit(1)
 
 S = load_data(sys.argv[1])
+N = len(S)
 
-def generate_signal(S: np.ndarray) -> Callable[[np.ndarray], np.ndarray]:
-    N = len(S)
-
+def generate_signal(S: np.ndarray, N: int) -> Callable[[np.ndarray], np.ndarray]:
     def s(n: np.ndarray) -> np.ndarray:
         return 1/(np.sqrt(N))*sum(S[k]*np.exp(2j*np.pi*n*k/N) for k in range(0, N))
 
     return s
 
-x = np.arange(0, 1024, 1)
-s = generate_signal(np.array([0, 1]))
-y = s(x)
+def generate_gaussian(mean, variance) -> Callable[[np.ndarray], np.ndarray]:
+    def f(x: np.ndarray) -> np.ndarray:
+        return 1/(np.sqrt(2*np.pi*variance))*np.exp(-(mean-x)**2/(2*variance))
 
-plt.title("Signal Histograms")
-plt.subplot(2, 1, 1)
-plt.xlabel("Amplitude")
-plt.ylabel("Frequency")
-plt.hist(y.real, bins=100)
-plt.grid()
+    return f
 
-plt.subplot(2, 1, 2)
-plt.xlabel("Amplitude")
-plt.ylabel("Frequency")
-plt.hist(y.imag, bins=100)
-plt.grid()
+x_signal = np.arange(0, 1024, 1)
+s = generate_signal(S, N)
+y_signal = s(x_signal)
 
 # Expected value
-print("Expected value:")
-print("\tReal:", np.mean(y.real))
-print("\tImaginary:", np.mean(y.imag))
+mean_real = np.mean(y_signal.real)
+mean_imag = np.mean(y_signal.imag)
 
 # Correlation
-print("Covariance:", np.mean(y.real * y.imag))
+corr = np.mean(y_signal.real * y_signal.imag)
+
+# Variance
+var_real = np.var(y_signal.real)
+var_imag = np.var(y_signal.imag)
+
+# Histogram
+hist_num_bins = 200
+hist_range = (-2.5, 2.5)
+
+hist_bin_size = (hist_range[1] - hist_range[0]) / hist_num_bins
+
+# Gaussian Distribution
+x_dist = np.linspace(-2.5, 2.5)
+y_dist = N * hist_bin_size * generate_gaussian(0, (var_real + var_imag)/2)(x_dist)
+
+plt.clf()
+plt.title("Real Part of Gaussian Signal")
+plt.xlabel("Amplitude")
+plt.ylabel("Count")
+plt.hist(y_signal.real, bins=hist_num_bins, range=hist_range, label="Histogram")
+plt.plot(x_dist, y_dist, label="Gaussian Distribution")
+plt.legend()
+plt.grid()
+
+plt.savefig("histogram_real.png")
+
+plt.clf()
+plt.title("Imaginary Part of Gaussian Signal")
+plt.xlabel("Amplitude")
+plt.ylabel("Count")
+plt.hist(y_signal.imag, bins=hist_num_bins, range=hist_range, label="Histogram")
+plt.plot(x_dist, y_dist, label="Gaussian Distribution")
+plt.legend()
+plt.grid()
+
+plt.savefig("histogram_imag.png")
 
 # plt.plot(x, y.real)
 # plt.title("Signal")
 # plt.xlabel("Time")
 # plt.ylabel("Amplitude")
-plt.tight_layout()
-
-plt.show()
 
