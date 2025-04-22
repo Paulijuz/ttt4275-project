@@ -4,11 +4,7 @@ from typing import Callable
 import numpy as np
 from data import load_data
 
-if len(sys.argv) < 2:
-    print("Usage: python T1.py <filename.mat>")
-    sys.exit(1)
-
-S = load_data(sys.argv[1])
+S = load_data("T1_data_Sk_BPSK")
 N = len(S)
 
 def generate_signal(S: np.ndarray, N: int) -> Callable[[np.ndarray], np.ndarray]:

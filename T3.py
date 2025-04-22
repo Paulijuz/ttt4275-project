@@ -1,62 +1,48 @@
 import matplotlib.pyplot as plt
-import sys
-from typing import Callable
 import numpy as np
 from data import load_data
-import math
+from scipy.stats import chi2
 
-if len(sys.argv) < 2:
-    print("Usage: python T1.py <filename.mat>")
-    sys.exit(1)
+def calucalte_variance(x: np.ndarray) -> np.floating:
+    real_varaiance = np.var(x.real)
+    imag_varaiance = np.var(x.imag)
 
-x = load_data(sys.argv[1])
-N = len(x)
+    return real_varaiance + imag_varaiance
 
-def generate_gaussian(mean: float, variance: float) -> Callable[[np.ndarray], np.ndarray]:
-    def f(x: np.ndarray) -> np.ndarray:
-        return 1/(np.sqrt(2*np.pi*variance))*np.exp(-(mean-x)**2/(2*variance))
+data_s = load_data("T3_data_sigma_s")
+data_w = load_data("T3_data_sigma_w")
 
-    return f
+signal_variance = calucalte_variance(data_s)
+noise_variance = calucalte_variance(data_w)
 
+def create_histogram(name: str, title: str, x: np.ndarray, var: np.floating, num_bins = 200, range = (0, 20)):
+    N = len(x)
+    bin_size = (range[1] - range[0]) / num_bins
 
-def generate_chi(k: int) -> Callable[[np.ndarray], np.ndarray]:
-    def f(x: np.ndarray) -> np.ndarray:
-        return 1/(2**(k/2) * math.gamma(k/2)) * x**(k/2 - 1) * np.exp(-x/2)
+    # Chi Squared Distribution
+    x_dist = np.linspace(*range)
+    y_dist = N * bin_size * chi2.pdf(x_dist, 2)
 
-    return f
+    # Normalization
+    x_normalized = 2 * np.abs(x**2) / var
 
-# Variance
-var_real = np.var(x.real)
-var_imag = np.var(x.imag)
+    plt.clf()
+    plt.title(title)
+    plt.xlabel("Amplitude")
+    plt.ylabel("Count")
+    plt.hist(x_normalized, bins=num_bins, range=range, label="Histogram")
+    plt.plot(x_dist, y_dist, label="Chi Squared Distribution")
+    plt.legend()
+    plt.grid()
 
-var = (var_real + var_imag) / 2
+    plt.savefig(f"{name}.png")
 
-# Histogram
-hist_num_bins = 300
-hist_range = (0, 30)
+if __name__ == "__main__":
+    print("Variance of signal:", signal_variance)
+    print("Variance of noise:", noise_variance)
 
-hist_bin_size = (hist_range[1] - hist_range[0]) / hist_num_bins
+    x_h0 = load_data("T3_data_x_H0")
+    x_h1 = load_data("T3_data_x_H1")
 
-# Chi Squared Distribution
-x_dist = np.linspace(*hist_range)
-y_dist = N * hist_bin_size * generate_chi(2)(x_dist)
-
-# Squaring
-x_normalized = 2 * np.abs(x**2) / var
-
-plt.clf()
-plt.title("Signal Under $H_0$")
-plt.xlabel("Amplitude")
-plt.ylabel("Count")
-plt.hist(x_normalized, bins=hist_num_bins, range=hist_range, label="Histogram")
-plt.plot(x_dist, y_dist, label="Chi Squared Distribution")
-plt.legend()
-plt.grid()
-
-plt.savefig("histogram.png")
-
-# plt.plot(x, y.real)
-# plt.title("Signal")
-# plt.xlabel("Time")
-# plt.ylabel("Amplitude")
-
+    create_histogram("histogram_h0", "Signal under $H_0$", x_h0, noise_variance)
+    create_histogram("histogram_h1", "Signal under $H_1$", x_h1, noise_variance + signal_variance)
