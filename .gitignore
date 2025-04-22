@@ -1,3 +1,7 @@
+# Project Specific Files
+*.png
+!figures/*.png
+
 # Visual Studio Code
 .vscode/
 

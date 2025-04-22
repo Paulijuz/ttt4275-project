@@ -24,7 +24,7 @@ def create_histogram(name: str, title: str, x: np.ndarray, var: np.floating, num
     y_dist = N * bin_size * chi2.pdf(x_dist, 2)
 
     # Normalization
-    x_normalized = 2 * np.abs(x**2) / var
+    x_normalized = 2 * np.abs(x)**2 / var
 
     plt.clf()
     plt.title(title)
