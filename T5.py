@@ -1,5 +1,4 @@
-from cProfile import label
-from scipy.stats import gamma, chi2
+from scipy.stats import gamma
 import matplotlib.pyplot as plt
 import numpy as np
 from T3 import signal_variance, noise_variance

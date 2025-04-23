@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import sys
 from typing import Callable
 import numpy as np
 from data import load_data
