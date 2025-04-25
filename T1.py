@@ -1,3 +1,4 @@
+from scipy.stats import norm
 import matplotlib.pyplot as plt
 from typing import Callable
 import numpy as np
@@ -11,12 +12,6 @@ def generate_signal(S: np.ndarray, N: int) -> Callable[[np.ndarray], np.ndarray]
         return 1/(np.sqrt(N))*sum(S[k]*np.exp(2j*np.pi*n*k/N) for k in range(0, N))
 
     return s
-
-def generate_gaussian(mean, variance) -> Callable[[np.ndarray], np.ndarray]:
-    def f(x: np.ndarray) -> np.ndarray:
-        return 1/(np.sqrt(2*np.pi*variance))*np.exp(-(mean-x)**2/(2*variance))
-
-    return f
 
 x_signal = np.arange(0, 1024, 1)
 s = generate_signal(S, N)
@@ -34,14 +29,14 @@ var_real = np.var(y_signal.real)
 var_imag = np.var(y_signal.imag)
 
 # Histogram
-hist_num_bins = 200
+hist_num_bins = 25
 hist_range = (-2.5, 2.5)
 
 hist_bin_size = (hist_range[1] - hist_range[0]) / hist_num_bins
 
 # Gaussian Distribution
 x_dist = np.linspace(-2.5, 2.5)
-y_dist = N * hist_bin_size * generate_gaussian(0, (var_real + var_imag)/2)(x_dist)
+y_dist = N * hist_bin_size * norm(0, np.sqrt((var_real + var_imag)/2)).pdf(x_dist)
 
 plt.clf()
 plt.title("Real Part of Gaussian Signal")
