@@ -4,7 +4,8 @@ from typing import Callable
 import numpy as np
 from data import load_data
 
-S = load_data("T1_data_Sk_BPSK")
+# Change to dataset of choice
+S = load_data("T1_data_Sk_Gaussian")
 N = len(S)
 
 def generate_signal(S: np.ndarray, N: int) -> Callable[[np.ndarray], np.ndarray]:
@@ -20,9 +21,11 @@ y_signal = s(x_signal)
 # Expected value
 mean_real = np.mean(y_signal.real)
 mean_imag = np.mean(y_signal.imag)
+print("Expected value:", mean_real + 1j*mean_imag)
 
 # Correlation
 corr = np.mean(y_signal.real * y_signal.imag)
+print("Correlation:", corr)
 
 # Variance
 var_real = np.var(y_signal.real)
@@ -59,9 +62,3 @@ plt.legend()
 plt.grid()
 
 plt.savefig("histogram_imag.png")
-
-# plt.plot(x, y.real)
-# plt.title("Signal")
-# plt.xlabel("Time")
-# plt.ylabel("Amplitude")
-

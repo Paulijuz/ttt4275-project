@@ -64,4 +64,5 @@ def run_numerical_experiment(P_fa: float = 0.1, K: int = 256):
 
 if __name__ == "__main__":
     for P_fa in [0.1, 0.01]:
+        print("P_fa:", P_fa)
         run_numerical_experiment(P_fa)

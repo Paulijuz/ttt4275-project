@@ -15,7 +15,7 @@ data_w = load_data("T3_data_sigma_w")
 signal_variance = calucalte_variance(data_s)
 noise_variance = calucalte_variance(data_w)
 
-def create_histogram(name: str, title: str, x: np.ndarray, var: np.floating, num_bins = 200, range = (0, 20)):
+def create_histogram(name: str, title: str, x: np.ndarray, var: np.floating, num_bins = 40, range = (0, 20)):
     N = len(x)
     bin_size = (range[1] - range[0]) / num_bins
 
