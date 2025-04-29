@@ -1,4 +1,4 @@
-from scipy.stats import norm, gamma
+from scipy.stats import norm, chi2
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -8,8 +8,8 @@ def create_characteristics_plot(K: int = 1):
     signal_variance = 1
 
     # Create the distributions for the test statistics
-    h0_dist = gamma(a=K, scale=noise_variance)
-    h1_dist = gamma(a=K, scale=noise_variance + signal_variance)
+    h0_dist = chi2(2*K, scale=noise_variance/2)
+    h1_dist = chi2(2*K, scale=(noise_variance + signal_variance)/2)
 
     # Create the approximate distributions for the test statistics
     mu_0 = K*(noise_variance)

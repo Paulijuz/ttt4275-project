@@ -53,11 +53,11 @@ def run_numerical_experiment(P_fa: float = 0.1, K: int = 256):
     plt.grid()
     plt.savefig(f"numerical_experiment_P_fa={P_fa}.png")
 
-    for i in range(len(z)):
-        if detected[i]:
-            print(f"{i:>2}: True")
-        else:
-            print(f"{i:>2}: False")
+    # for i in range(len(z)):
+    #     if detected[i]:
+    #         print(f"{i:>2}: True")
+    #     else:
+    #         print(f"{i:>2}: False")
     
     print("Number detected:", np.sum(detected))
     print("Number mpt detected:", np.sum(np.logical_not(detected)))

@@ -1,14 +1,17 @@
-from scipy.stats import gamma
+from scipy.stats import chi2
 import matplotlib.pyplot as plt
 import numpy as np
 from T3 import signal_variance, noise_variance
 
-def calculate_characteristics(k: int) -> tuple[np.ndarray, np.ndarray]:
-    h0_dist = gamma(a=k, scale=noise_variance)
-    h1_dist = gamma(a=k, scale=noise_variance + signal_variance)
+def calculate_characteristics(K: int) -> tuple[np.ndarray, np.ndarray]:
+    h0_dist = chi2(2*K, scale=noise_variance/2)
+    h1_dist = chi2(2*K, scale=(noise_variance + signal_variance)/2)
 
-    lower = (min(h0_dist.mean(), h1_dist.mean()) - 100)
-    upper = (max(h0_dist.mean(), h1_dist.mean()) + 100)
+    h0_mean = h0_dist.mean()
+    h1_mean = h1_dist.mean()
+
+    lower = (min(h0_mean, h1_mean) - 100)
+    upper = (max(h0_mean, h1_mean) + 100)
 
     l = np.linspace(lower, upper, 1000)
 
